@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 set -e
 
@@ -14,19 +14,23 @@ echo "Create folder for python scripts"
 sudo mkdir -p "$TARGET_DIR"
 
 echo "Move all .py and .yml"
-shopt -s nullglob
-FILES=(*.py *.yml)
-if [ ${#FILES[@]} -gt 0 ]; then
-    sudo mv "${FILES[@]}" "$TARGET_DIR/"
-else
-    echo "No .py or .yml file found."
+FOUND=0
+for file in *.py *.yml; do
+    if [ -f "$file" ]; then
+        sudo mv "$file" "$TARGET_DIR/"
+        FOUND=1
+    fi
+done
+
+if [ "$FOUND" -eq 0 ]; then
+    echo "Keine .py oder .yml Dateien zum Verschieben gefunden."
 fi
-shopt -u nullglob
 
 echo "Create user technitium"
 if ! id technitium >/dev/null 2>&1; then
     sudo useradd -r -s /usr/sbin/nologin technitium
 fi
+
 
 echo "Create systemd"
 sudo tee /etc/systemd/system/technitium-prefix-updater.service > /dev/null <<'EOF'
@@ -38,8 +42,8 @@ After=network.target
 Type=simple
 User=technitium
 Group=technitium
-WorkingDirectory="$TARGET_DIR"
-ExecStart=/usr/bin/python3 "$TARGET_DIR"/http_handler.py
+WorkingDirectory=/opt/technitium/ipv6_prefix_update
+ExecStart=/usr/bin/python3 /opt/technitium/ipv6_prefix_update/http_handler.py
 
 Restart=on-failure
 RestartSec=5
