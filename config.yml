@@ -1,11 +1,11 @@
 general:
   technitium_url: "http://[::1]:5380"
-  api_token: "248d88a71f3c595e666e397b1e9e7885200e95df451fbf373e37223e2de3e956"
+  api_token: "token"
   isp_prefix_length: 56 #Must be 64 or smaller
 
 zones:
-  - "schreck.local"
-  - "schreck.home.arpa"
+  - "test.home.arpa"
+  - "test2.home.arpa"
 
 dns:
   ttl: 300 #Keep it small if your prefix changes frequently
