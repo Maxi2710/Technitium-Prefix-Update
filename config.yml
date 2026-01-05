@@ -1,12 +1,19 @@
 general:
+  #Base URL of the Technitium DNS Server API.
   technitium_url: "http://[::1]:5380"
+  #API token created in Technitium. The same token must be provided in the HTTP update requestt.
   api_token: "token"
-  isp_prefix_length: 56 #Must be 64 or smaller
+  #Pv6 prefix length assigned by your ISP. Must be 64 or smaller (e.g. 56, 60, 64).
+  isp_prefix_length: 56
 
 zones:
+  #Primary DNS zones whose AAAA records will be updated.
   - "test.home.arpa"
   - "test2.home.arpa"
 
 dns:
-  ttl: 300 #Keep it small if your prefix changes frequently
-  ptr: True #If set "True" it will updates every PTR Zone in Technitium with a GUA prefix as the name
+  #TTL (in seconds) for updated AAAA records. Use a low value if your IPv6 prefix changes frequently.
+  ttl: 300
+  #Enable automatic PTR (reverse DNS) zone updates.
+  #WARNING: This will recreate PTR zones and ignores advanced settings like DNSSEC.
+  ptr: True
