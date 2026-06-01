@@ -193,6 +193,19 @@ def add_ptr_record(session, url, token, zone, domain, ptr_target, ttl):
     )
 
 
+#Set catalog zone on a zone (only called when a catalog zone name is present)
+def set_zone_catalog(session, url, token, zone, catalog_zone_name):
+    api_get(
+        session,
+        f"{url}/api/zones/options/set",
+        params={
+            "token": token,
+            "zone": zone,
+            "catalog": catalog_zone_name
+        }
+    )
+
+
 #Convert reverse Zone name to Prefix
 def ip6_arpa_to_prefix(zone_name):
     #Remove ending and split in nibbles
@@ -313,6 +326,13 @@ def migrate_ipv6_ptr_zones(session, zones, new_prefix):
         print(f"  New prefix: {new_net}")
         print(f"  New zone:   {new_zone}")
 
+        #Read catalog zone setting directly from the zone list data (already fetched)
+        catalog_zone = zone.get("catalog") or ""
+        if catalog_zone:
+            print(f"  Catalog zone: {catalog_zone}")
+        else:
+            print("  Catalog zone: (none)")
+
         #Create new zone
         try:
             create_zone(session, technitium_url, api_token, new_zone)
@@ -320,6 +340,14 @@ def migrate_ipv6_ptr_zones(session, zones, new_prefix):
         except SystemExit:
             print("  Failed to create new zone")
             continue
+
+        #Apply catalog zone setting to new zone (if the old zone had one configured)
+        if catalog_zone:
+            try:
+                set_zone_catalog(session, technitium_url, api_token, new_zone, catalog_zone)
+                print(f"  Catalog zone '{catalog_zone}' applied to new zone")
+            except SystemExit:
+                print("  Warning: failed to set catalog zone on new zone! Continuing anyway")
 
         #Get all PTR records from old zone
         records = get_ptr_records(session, technitium_url, api_token, old_zone)
