@@ -27,7 +27,7 @@ The service receives a global IPv6 address via HTTP, extracts the configured pre
    * optionally updates PTR zones by changing the zone name to match the new prefix
 
 > **Note:**
-> The PTR update feature currently ignores advanced zone settings such as **DNSSEC**.
+> The PTR update feature currently ignores advanced zone settings such as **DNSSEC**, however it does work with catalog zones.
 > If you are using DNSSEC, **disable PTR updates**.
 
 ---
